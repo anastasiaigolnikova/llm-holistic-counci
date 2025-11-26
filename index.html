@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Holistic Council</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0f0f0f;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #242424;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --border-color: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .save-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 16px;
+        }
+        
+        .save-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 20px 20px 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0;
+            color: var(--text-primary);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .logo {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo svg {
+            width: 28px;
+            height: 28px;
+        }
+        
+        .archive-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .archive-btn:hover {
+            border-color: var(--text-secondary);
+            color: var(--text-primary);
+        }
+        
+        
+        .judge-selector {
+            background: transparent;
+            border: none;
+            padding: 0;
+            margin-bottom: 18px;
+        }
+        
+        .judge-selector-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .judge-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .judge-option {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 130px;
+            flex: 0 0 auto;
+        }
+        
+        .judge-option:hover {
+            border-color: var(--accent-blue);
+        }
+        
+        .judge-option.active {
+            border-color: var(--accent-blue);
+            border-width: 2px;
+            background: rgba(59, 130, 246, 0.08);
+        }
+        
+        .judge-option-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .judge-option-provider {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+        
+        .add-model-btn {
+            background: transparent;
+            border: 1px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            color: var(--text-secondary);
+            flex: 0 0 auto;
+        }
+        
+        .add-model-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+        
+        .add-model-btn svg {
+            width: 22px;
+            height: 22px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+        
+        .conversation-context {
+            display: none !important;
+        }
+        
+        .conversation-context-title {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .conversation-context-title svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+        
+        .conversation-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .conversation-message {
+            font-size: 0.85rem;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: var(--bg-secondary);
+        }
+        
+        .conversation-message.user {
+            border-left: 3px solid var(--accent-blue);
+        }
+        
+        .conversation-message.assistant {
+            border-left: 3px solid var(--accent-green);
+        }
+        
+        .conversation-message-label {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-secondary);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.open {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-header h2 {
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+        
+        .close-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .close-btn:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+        
+        .archive-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .archive-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        
+        .archive-item:hover {
+            border-color: var(--accent-blue);
+        }
+        
+        .archive-date {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        
+        .archive-query {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        
+        .credit {
+            position: absolute;
+            top: 12px;
+            right: 20px;
+            font-size: 0.75rem;
+            color: #666;
+        }
+        
+        .credit a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .credit a:hover {
+            color: var(--text-secondary);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin: 5px;
+            background: var(--bg-card);
+        }
+
+        .status-badge.active { border: 1px solid var(--accent-green); }
+        .status-badge.inactive { border: 1px solid #ef4444; opacity: 0.5; }
+
+        /* Input Section */
+        .input-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .textarea-container {
+            flex: 1;
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            padding-right: 50px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        textarea::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0 32px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+            white-space: nowrap;
+            height: 80px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Results Section */
+        .results-section {
+            display: none;
+        }
+
+        .results-section.visible {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* Individual Responses */
+        .responses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .response-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .response-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        
+        .icon-btn:hover {
+            color: var(--text-primary);
+        }
+        
+        .icon-btn.active {
+            color: var(--accent-blue);
+        }
+        
+        .icon-btn.active svg {
+            fill: currentColor;
+        }
+        
+        .icon-btn.dislike.active {
+            color: #ef4444;
+        }
+
+        .model-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .model-icon.openai { background: #10a37f; color: white; }
+        .model-icon.anthropic { background: #d97757; color: white; }
+        .model-icon.google { background: #4285f4; color: white; }
+        .model-icon.perplexity { background: #1fb5a8; color: white; }
+        .model-icon.meta { background: #0668E1; color: white; }
+
+        .model-name {
+            font-weight: 600;
+        }
+
+        .response-content {
+            padding: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+        }
+
+        .response-content h1 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 1.2em;
+            margin-bottom: 0.5em;
+            color: var(--text-primary);
+        }
+        
+        .response-content h2 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-top: 1.2em;
+            margin-bottom: 0.5em;
+            color: var(--text-primary);
+        }
+        
+        .response-content h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 1em;
+            margin-bottom: 0.4em;
+            color: var(--text-primary);
+        }
+
+        .response-content h1:first-child, 
+        .response-content h2:first-child, 
+        .response-content h3:first-child {
+            margin-top: 0;
+        }
+
+        .response-content p {
+            margin-bottom: 1em;
+        }
+
+        .response-content ul, .response-content ol {
+            margin-left: 1.5em;
+            margin-bottom: 1em;
+        }
+
+        .response-content code {
+            background: var(--bg-secondary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.9em;
+        }
+
+        .response-content pre {
+            background: var(--bg-secondary);
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 1em;
+        }
+
+        .response-content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        /* Chairman analysis (short model overview) */
+        .chairman-analysis {
+            margin-bottom: 16px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 16px 18px;
+        }
+
+        /* Reviews Section */
+        .reviews-section {
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .reviews-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .reviews-toggle {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .reviews-toggle svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+        
+        .reviews-toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+        
+        .reviews-toggle:hover {
+            color: var(--text-primary);
+        }
+        
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+            overflow: hidden;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+        }
+        
+        .reviews-grid.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin-top: 0;
+        }
+        
+        .review-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .review-reviewer {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent-purple);
+        }
+        
+        .review-content {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+        
+        .review-content strong {
+            color: var(--text-primary);
+        }
+        
+        /* Chairman Section */
+        .chairman-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-blue);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 30px;
+        }
+
+        .chairman-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .chairman-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        
+        .judge-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .chairman-content {
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .chairman-content h1 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 1.2em;
+            margin-bottom: 0.5em;
+            color: var(--text-primary);
+        }
+        
+        .chairman-content h2 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-top: 1.2em;
+            margin-bottom: 0.5em;
+            color: var(--text-primary);
+        }
+        
+        .chairman-content h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 1em;
+            margin-bottom: 0.4em;
+            color: var(--text-primary);
+        }
+
+        .chairman-content h1:first-child,
+        .chairman-content h2:first-child,
+        .chairman-content h3:first-child {
+            margin-top: 0;
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Query Display */
+        .query-display {
+            display: none;
+        }
+        
+        .input-copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            opacity: 0;
+        }
+        
+        .input-copy-btn.visible {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .input-copy-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            background: var(--bg-card);
+        }
+        
+        .input-copy-btn svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+        
+        .archive-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+        
+        .archive-badge svg {
+            width: 14px;
+            height: 14px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        /* Examples */
+        .examples {
+            margin-top: 16px;
+        }
+
+        .examples-title {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .example-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .example-chip {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .example-chip:hover {
+            border-color: var(--accent-blue);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .responses-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .input-wrapper {
+                flex-direction: column;
+            }
+            
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="credit">Created by <a href="https://holisticbrandlab.com/" target="_blank" rel="noopener">Holistic Brand Lab</a> • Inspired by <a href="https://x.com/karpathy/status/1992381094667411768" target="_blank" rel="noopener">Andrej Karpathy</a></div>
+            <button class="archive-btn" onclick="openArchiveModal()">Archive</button>
+            <h1>
+                <div class="logo">
+                    <svg viewBox="0 0 152 151" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M35.1055 125.868C41.9526 141.811 54.4441 150.759 75.5685 150.759C96.989 150.759 109.184 141.811 116.328 125.868C105.021 129.782 91.0394 131.42 75.6148 131.42C60.1902 131.42 46.4496 129.782 35.1055 125.868Z" fill="#65DA8C"/>
+                        <path d="M116.921 25.1772C110.379 8.3924 97.8876 0 75.5696 0C53.5568 0 41.0561 8.3924 34.209 24.8904C45.5161 20.9764 59.5065 19.024 75.5696 19.024C91.6326 19.024 105.669 20.9764 116.921 25.1772Z" fill="#65DA8C"/>
+                        <path d="M116.92 25.1768C121.982 37.4831 123.768 54.2587 123.768 75.2351C123.768 95.6563 121.982 112.996 116.365 125.867C138.082 118.307 151.175 102.652 151.175 75.2351C151.138 48.6699 138.646 32.7271 116.92 25.1768Z" fill="#65DA8C"/>
+                        <path d="M34.2358 24.8906C12.7875 32.7279 0 48.6706 0 75.2358C0 102.652 13.0836 118.595 35.1056 125.868C29.4521 112.997 27.3702 95.657 27.3702 75.2358C27.3702 54.2594 29.156 37.197 34.2358 24.8906Z" fill="#65DA8C"/>
+                    </svg>
+                </div>
+                LLM Holistic Council
+            </h1>
+        </header>
+
+        <section class="input-section">
+            <div class="judge-selector">
+                <label class="judge-selector-label">
+                    <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 6v6l4 2"></path>
+                    </svg>
+                    Independent Judge:
+                </label>
+                <div class="judge-options" id="judge-options">
+                    <!-- Заполняется динамически -->
+                </div>
+            </div>
+            
+            <div class="conversation-context" id="conversation-context">
+                <div class="conversation-context-title">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    Conversation Context
+                </div>
+                <div class="conversation-messages" id="conversation-messages">
+                    <!-- Заполняется динамически -->
+                </div>
+            </div>
+            
+            <div class="input-wrapper">
+                <div class="textarea-container">
+                    <textarea 
+                        id="query-input" 
+                        placeholder="Enter your question, hypothesis or fact to verify..."
+                        rows="3"
+                    ></textarea>
+                    <button class="input-copy-btn" id="input-copy-btn" onclick="copyInputQuery()" title="Copy your question">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                    </button>
+                </div>
+                <button class="btn" id="submit-btn" onclick="submitQuery()">
+                    Convene Council
+                </button>
+            </div>
+        </section>
+
+        <section class="results-section" id="results-section">
+            <div class="query-display">
+                <div class="query-label">Query to Council:</div>
+                <div class="query-text" id="query-text"></div>
+            </div>
+            
+            <div id="archive-badge-container"></div>
+
+            <h2 class="section-title">
+                Council Members' Opinions
+            </h2>
+            
+            <div class="responses-grid" id="responses-grid">
+                <!-- Заполняется динамически -->
+            </div>
+            
+            <div class="reviews-section" id="reviews-section" style="display: none;">
+                <div class="reviews-header" onclick="toggleReviews()">
+                    <h2 class="section-title" style="margin-bottom: 0;">
+                        Peer Reviews (Anonymous Rankings)
+                    </h2>
+                    <button class="reviews-toggle" id="reviews-toggle">
+                        <svg viewBox="0 0 24 24">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                </div>
+                <div class="reviews-grid" id="reviews-grid">
+                    <!-- Заполняется динамически -->
+                </div>
+            </div>
+
+            <div class="chairman-section" id="chairman-section">
+                <div class="chairman-header">
+                    <span class="chairman-title">Independent Conclusion</span>
+                    <div class="judge-badge" id="judge-badge-display">Perplexity Sonar</div>
+                    <div class="action-buttons" style="display: none;" id="chairman-actions">
+                        <button class="icon-btn" id="copy-chairman-btn" onclick="copyChairman()" title="Copy">
+                            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                        <button class="icon-btn like" onclick="likeChairman()" title="Like">
+                            <svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                        </button>
+                        <button class="icon-btn dislike" onclick="dislikeChairman()" title="Dislike">
+                            <svg viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"></path></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="chairman-analysis" id="chairman-analysis" style="display: none;">
+                    <!-- Краткий обзор ответов моделей -->
+                </div>
+                <div class="chairman-content" id="chairman-content">
+                    <!-- Заполняется динамически -->
+                </div>
+            </div>
+            
+            <button class="save-btn" id="save-btn" onclick="saveToArchive()" style="display: none;">
+                Save to Archive
+            </button>
+        </section>
+    </div>
+    
+    <div class="modal" id="archive-modal" onclick="closeArchiveModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2>Council Archive</h2>
+                <button class="close-btn" onclick="closeArchiveModal()">×</button>
+            </div>
+            <div class="archive-list" id="archive-list">
+                <div style="color: var(--text-secondary); font-size: 0.85rem; text-align: center; padding: 40px 0;">
+                    Empty
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="add-model-modal" onclick="closeAddModelModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2>Add New Model</h2>
+                <button class="close-btn" onclick="closeAddModelModal()">×</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                    <label style="display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Model Name</label>
+                    <input type="text" id="new-model-name" placeholder="e.g., GPT-4 Turbo" style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 14px; color: var(--text-primary); font-size: 0.95rem;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Provider</label>
+                    <input type="text" id="new-model-provider" placeholder="e.g., OpenAI" style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 14px; color: var(--text-primary); font-size: 0.95rem;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">OpenRouter Model ID</label>
+                    <input type="text" id="new-model-id" placeholder="e.g., openai/gpt-4-turbo" style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 14px; color: var(--text-primary); font-size: 0.95rem;">
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Find model IDs at <a href="https://openrouter.ai/models" target="_blank" style="color: var(--accent-blue);">openrouter.ai/models</a></div>
+                </div>
+                <button onclick="addNewModel()" style="background: var(--accent-blue); border: none; color: white; padding: 12px 20px; border-radius: 8px; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; margin-top: 10px;">
+                    Add Model
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // История диалога
+        let conversationHistory = [];
+        
+        // Текущий судья
+        let currentJudge = 'claude-sonnet';
+        
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Загружаем список моделей
+            await loadModels();
+            
+            const queryInput = document.getElementById('query-input');
+            const copyBtn = document.getElementById('input-copy-btn');
+            
+            // Показываем/скрываем кнопку Copy в зависимости от содержимого
+            queryInput.addEventListener('input', () => {
+                if (queryInput.value.trim().length > 0) {
+                    copyBtn.classList.add('visible');
+                } else {
+                    copyBtn.classList.remove('visible');
+                }
+            });
+            
+            // Enter для отправки (Shift+Enter для новой строки)
+            queryInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    submitQuery();
+                }
+            });
+        });
+        
+        async function loadModels() {
+            try {
+                const response = await fetch('/api/models');
+                const data = await response.json();
+                
+                // Загружаем кастомные модели из localStorage
+                const rawCustomModels = JSON.parse(localStorage.getItem('customModels') || '{}');
+                
+                // Очищаем кастомные модели от Grok / xAI, если они были добавлены ранее
+                const cleanedCustomModels = {};
+                for (const [key, model] of Object.entries(rawCustomModels)) {
+                    const name = (model.name || '').toLowerCase();
+                    const provider = (model.provider || '').toLowerCase();
+                    if (!name.includes('grok') && !provider.includes('xai') && !provider.includes('x-ai')) {
+                        cleanedCustomModels[key] = model;
+                    }
+                }
+                if (Object.keys(cleanedCustomModels).length !== Object.keys(rawCustomModels).length) {
+                    localStorage.setItem('customModels', JSON.stringify(cleanedCustomModels));
+                }
+                
+                // Объединяем стандартные и кастомные модели
+                const allModels = [
+                    ...data.models,
+                    ...Object.entries(cleanedCustomModels).map(([key, model]) => ({
+                        key: key,
+                        name: model.name,
+                        provider: model.provider
+                    }))
+                ];
+                
+                const judgeOptions = document.getElementById('judge-options');
+                judgeOptions.innerHTML = allModels.map(model => `
+                    <div class="judge-option ${model.key === data.default_judge ? 'active' : ''}" 
+                         onclick="selectJudge('${model.key}')"
+                         data-judge="${model.key}">
+                        <div class="judge-option-name">${model.name}</div>
+                        <div class="judge-option-provider">${model.provider}</div>
+                    </div>
+                `).join('') + `
+                    <button class="add-model-btn" onclick="openAddModelModal()" title="Add new model to council">
+                        <svg viewBox="0 0 24 24">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </button>
+                `;
+                
+                currentJudge = data.default_judge;
+                
+                // Обновляем бейдж судьи при загрузке
+                updateJudgeBadge(currentJudge);
+            } catch (error) {
+                console.error('Failed to load models:', error);
+            }
+        }
+        
+        function selectJudge(judgeKey) {
+            currentJudge = judgeKey;
+            
+            // Обновляем визуальное выделение
+            document.querySelectorAll('.judge-option').forEach(option => {
+                if (option.dataset.judge === judgeKey) {
+                    option.classList.add('active');
+                } else {
+                    option.classList.remove('active');
+                }
+            });
+            
+            // Обновляем бейдж судьи в итоговом блоке
+            updateJudgeBadge(judgeKey);
+        }
+        
+        function updateJudgeBadge(judgeKey) {
+            const judgeOption = document.querySelector(`[data-judge="${judgeKey}"]`);
+            if (judgeOption) {
+                const judgeName = judgeOption.querySelector('.judge-option-name').textContent;
+                const judgeProvider = judgeOption.querySelector('.judge-option-provider').textContent;
+                const judgeBadge = document.getElementById('judge-badge-display');
+                if (judgeBadge) {
+                    judgeBadge.textContent = `${judgeName} (${judgeProvider})`;
+                }
+            }
+        }
+        
+        function toggleReviews() {
+            const reviewsGrid = document.getElementById('reviews-grid');
+            const toggleBtn = document.getElementById('reviews-toggle');
+            
+            reviewsGrid.classList.toggle('collapsed');
+            toggleBtn.classList.toggle('collapsed');
+        }
+        
+        
+        function updateConversationContext() {
+            const contextElement = document.getElementById('conversation-context');
+            const messagesElement = document.getElementById('conversation-messages');
+            
+            if (conversationHistory.length === 0) {
+                contextElement.classList.remove('visible');
+                return;
+            }
+            
+            contextElement.classList.add('visible');
+            messagesElement.innerHTML = conversationHistory.map(msg => `
+                <div class="conversation-message ${msg.role}">
+                    <div class="conversation-message-label">${msg.role === 'user' ? 'Question:' : 'Council:'}</div>
+                    <div>${msg.content.substring(0, 150)}${msg.content.length > 150 ? '...' : ''}</div>
+                </div>
+            `).join('');
+        }
+        
+        function openArchiveModal() {
+            loadArchive();
+            document.getElementById('archive-modal').classList.add('open');
+        }
+        
+        function closeArchiveModal(event) {
+            if (!event || event.target.id === 'archive-modal') {
+                document.getElementById('archive-modal').classList.remove('open');
+            }
+        }
+        
+        function openAddModelModal() {
+            document.getElementById('add-model-modal').classList.add('open');
+        }
+        
+        function closeAddModelModal(event) {
+            if (!event || event.target.id === 'add-model-modal') {
+                document.getElementById('add-model-modal').classList.remove('open');
+                // Очищаем поля
+                document.getElementById('new-model-name').value = '';
+                document.getElementById('new-model-provider').value = '';
+                document.getElementById('new-model-id').value = '';
+            }
+        }
+        
+        async function addNewModel() {
+            const name = document.getElementById('new-model-name').value.trim();
+            const provider = document.getElementById('new-model-provider').value.trim();
+            const modelId = document.getElementById('new-model-id').value.trim();
+            
+            if (!name || !provider || !modelId) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            // Генерируем уникальный ключ
+            const key = 'custom-' + Date.now();
+            
+            // Добавляем в локальное хранилище
+            const customModels = JSON.parse(localStorage.getItem('customModels') || '{}');
+            customModels[key] = {
+                model: modelId,
+                name: name,
+                provider: provider
+            };
+            localStorage.setItem('customModels', JSON.stringify(customModels));
+            
+            // Перезагружаем список моделей
+            await loadModels();
+            
+            closeAddModelModal();
+        }
+        
+        function loadArchive() {
+            const archive = JSON.parse(localStorage.getItem('llmCouncilArchive') || '[]');
+            const archiveList = document.getElementById('archive-list');
+            
+            if (archive.length === 0) {
+                archiveList.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.85rem; text-align: center; padding: 40px 0;">Empty</div>';
+                return;
+            }
+            
+            archiveList.innerHTML = archive.map((item, idx) => `
+                <div class="archive-item" onclick="loadFromArchive(${idx})">
+                    <div class="archive-date">${new Date(item.timestamp).toLocaleDateString('en-US', {month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'})}</div>
+                    <div class="archive-query">${item.query}</div>
+                </div>
+            `).reverse().join('');
+        }
+        
+        function saveToArchive() {
+            if (!window.currentCouncilData) return;
+            
+            const archive = JSON.parse(localStorage.getItem('llmCouncilArchive') || '[]');
+            archive.push(window.currentCouncilData);
+            localStorage.setItem('llmCouncilArchive', JSON.stringify(archive));
+            
+            const btn = document.getElementById('save-btn');
+            btn.textContent = 'Saved ✓';
+            btn.disabled = true;
+            setTimeout(() => {
+                btn.textContent = 'Save to Archive';
+                btn.disabled = false;
+            }, 2000);
+        }
+        
+        function loadFromArchive(idx) {
+            const archive = JSON.parse(localStorage.getItem('llmCouncilArchive') || '[]');
+            const data = archive[idx];
+            
+            if (!data) return;
+            
+            closeArchiveModal();
+            
+            // Очищаем историю диалога при загрузке из архива
+            conversationHistory = [];
+            updateConversationContext();
+            
+            // Показываем бейдж архива
+            const badgeContainer = document.getElementById('archive-badge-container');
+            const date = new Date(data.timestamp).toLocaleDateString('en-US', {month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'});
+            badgeContainer.innerHTML = `
+                <div class="archive-badge">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 8v13H3V8"></path>
+                        <path d="M1 3h22v5H1z"></path>
+                        <path d="M10 12h4"></path>
+                    </svg>
+                    From Archive • ${date}
+                </div>
+            `;
+            
+            document.getElementById('query-text').textContent = data.query;
+            document.getElementById('results-section').classList.add('visible');
+            
+            const responsesGrid = document.getElementById('responses-grid');
+            responsesGrid.innerHTML = data.individual_responses.map((r, idx) => {
+                let providerClass = 'google';
+                if (r.model.includes('gpt')) {
+                    providerClass = 'openai';
+                } else if (r.model.includes('claude')) {
+                    providerClass = 'anthropic';
+                } else if (r.model.includes('perplexity')) {
+                    providerClass = 'perplexity';
+                } else if (r.model.includes('llama') || r.model.includes('meta')) {
+                    providerClass = 'meta';
+                }
+                const modelLabel = String.fromCharCode(65 + idx); // A, B, C, D...
+                return `
+                <div class="response-card">
+                    <div class="response-header">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="model-icon ${providerClass}">${modelLabel}</div>
+                            <span class="model-name">${r.name}</span>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="icon-btn copy-btn-${idx}" onclick="copyResponse(${idx})" title="Copy">
+                                <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                            <button class="icon-btn like" onclick="likeResponse(${idx})" title="Like">
+                                <svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                            </button>
+                            <button class="icon-btn dislike" onclick="dislikeResponse(${idx})" title="Dislike">
+                                <svg viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="response-content" id="response-${idx}">
+                        ${marked.parse(r.response)}
+                    </div>
+                </div>
+            `}).join('');
+            
+            // Отображаем peer reviews если есть
+            if (data.reviews && data.reviews.length > 0) {
+                const reviewsSection = document.getElementById('reviews-section');
+                const reviewsGrid = document.getElementById('reviews-grid');
+                
+                reviewsSection.style.display = 'block';
+                reviewsGrid.innerHTML = data.reviews.map((review, idx) => `
+                    <div class="review-card">
+                        <div class="review-header">
+                            <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; stroke: var(--accent-purple); fill: none; stroke-width: 2;">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                            <span class="review-reviewer">Reviewer: ${review.reviewer}</span>
+                        </div>
+                        <div class="review-content">
+                            ${marked.parse(review.review)}
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                document.getElementById('reviews-section').style.display = 'none';
+            }
+            
+            const chairmanContent = document.getElementById('chairman-content');
+            const chairmanAnalysis = document.getElementById('chairman-analysis');
+            if (data.chairman_response) {
+                const raw = data.chairman_response || '';
+                const analysisHeading = '## Analysis of Council Responses';
+                const synthesisHeading = '## Final Synthesis';
+                
+                let analysisPart = '';
+                let synthesisPart = raw;
+                
+                const analysisIndex = raw.indexOf(analysisHeading);
+                const synthesisIndex = raw.indexOf(synthesisHeading);
+                
+                if (analysisIndex !== -1 && synthesisIndex !== -1) {
+                    analysisPart = raw.slice(analysisIndex, synthesisIndex).trim();
+                    synthesisPart = raw.slice(synthesisIndex).trim();
+                }
+                
+                if (analysisPart && chairmanAnalysis) {
+                    chairmanAnalysis.innerHTML = marked.parse(analysisPart);
+                    chairmanAnalysis.style.display = 'block';
+                } else if (chairmanAnalysis) {
+                    chairmanAnalysis.style.display = 'none';
+                    chairmanAnalysis.innerHTML = '';
+                }
+                
+                chairmanContent.innerHTML = marked.parse(synthesisPart);
+                document.getElementById('chairman-actions').style.display = 'flex';
+            } else {
+                chairmanContent.innerHTML = '';
+                const chairmanAnalysis = document.getElementById('chairman-analysis');
+                if (chairmanAnalysis) {
+                    chairmanAnalysis.style.display = 'none';
+                    chairmanAnalysis.innerHTML = '';
+                }
+            }
+            
+            window.originalResponses = data.individual_responses.map(r => r.response);
+            window.originalChairman = data.chairman_response;
+            window.currentCouncilData = data;
+            
+            document.getElementById('save-btn').style.display = 'none';
+            document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function setExample(element) {
+            document.getElementById('query-input').value = element.textContent;
+        }
+
+        async function submitQuery() {
+            const queryInput = document.getElementById('query-input');
+            const query = queryInput.value.trim();
+            
+            if (!query) return;
+            
+            const submitBtn = document.getElementById('submit-btn');
+            const resultsSection = document.getElementById('results-section');
+            const responsesGrid = document.getElementById('responses-grid');
+            const chairmanContent = document.getElementById('chairman-content');
+            const chairmanAnalysis = document.getElementById('chairman-analysis');
+            
+            // Очищаем бейдж архива для нового запроса
+            document.getElementById('archive-badge-container').innerHTML = '';
+            
+            // Очищаем предыдущие результаты
+            if (chairmanAnalysis) {
+                chairmanAnalysis.innerHTML = '';
+                chairmanAnalysis.style.display = 'none';
+            }
+            
+            // Показываем секцию результатов
+            resultsSection.classList.add('visible');
+            document.getElementById('query-text').textContent = query;
+            
+            // Показываем загрузку
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Council deliberating...';
+            
+            responsesGrid.innerHTML = `
+                <div class="response-card">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <span>GPT-4o thinking...</span>
+                    </div>
+                </div>
+                <div class="response-card">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <span>Claude thinking...</span>
+                    </div>
+                </div>
+                <div class="response-card">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <span>Gemini thinking...</span>
+                    </div>
+                </div>
+            `;
+            
+            chairmanContent.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <span>Chairman analyzing responses...</span>
+                </div>
+            `;
+            
+            try {
+                // Определяем язык запроса
+                const isCyrillic = /[\u0400-\u04FF]/.test(query);
+                const queryLanguage = isCyrillic ? 'ru' : 'en';
+                
+                console.log('Query language detected:', queryLanguage, 'Cyrillic found:', isCyrillic);
+                
+                const response = await fetch('/api/council', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        query,
+                        query_language: queryLanguage,
+                        history: conversationHistory,
+                        judge: currentJudge
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Отображаем индивидуальные ответы (Stage 1)
+                responsesGrid.innerHTML = data.individual_responses.map((r, idx) => {
+                    let providerClass = 'google';
+                    if (r.model.includes('gpt')) {
+                        providerClass = 'openai';
+                    } else if (r.model.includes('claude')) {
+                        providerClass = 'anthropic';
+                    } else if (r.model.includes('perplexity')) {
+                        providerClass = 'perplexity';
+                    } else if (r.model.includes('llama') || r.model.includes('meta')) {
+                        providerClass = 'meta';
+                    }
+                    const modelLabel = String.fromCharCode(65 + idx); // A, B, C, D...
+                    return `
+                    <div class="response-card">
+                        <div class="response-header">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="model-icon ${providerClass}">${modelLabel}</div>
+                                <span class="model-name">${r.name}</span>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="icon-btn copy-btn-${idx}" onclick="copyResponse(${idx})" title="Copy">
+                                    <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                </button>
+                                <button class="icon-btn like" onclick="likeResponse(${idx})" title="Like">
+                                    <svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                                </button>
+                                <button class="icon-btn dislike" onclick="dislikeResponse(${idx})" title="Dislike">
+                                    <svg viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="response-content" id="response-${idx}">
+                            ${marked.parse(r.response)}
+                        </div>
+                    </div>
+                `}).join('');
+                
+                // Отображаем peer reviews (Stage 2)
+                if (data.reviews && data.reviews.length > 0) {
+                    const reviewsSection = document.getElementById('reviews-section');
+                    const reviewsGrid = document.getElementById('reviews-grid');
+                    
+                    reviewsSection.style.display = 'block';
+                    reviewsGrid.innerHTML = data.reviews.map((review, idx) => `
+                        <div class="review-card">
+                            <div class="review-header">
+                                <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; stroke: var(--accent-purple); fill: none; stroke-width: 2;">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                                <span class="review-reviewer">Reviewer: ${review.reviewer}</span>
+                            </div>
+                            <div class="review-content">
+                                ${marked.parse(review.review)}
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('reviews-section').style.display = 'none';
+                }
+                
+                // Отображаем ответ независимого судьи (Stage 3)
+                if (data.chairman_response) {
+                    const raw = data.chairman_response || '';
+                    const analysisHeading = '## Analysis of Council Responses';
+                    const synthesisHeading = '## Final Synthesis';
+                    
+                    let analysisPart = '';
+                    let synthesisPart = raw;
+                    
+                    const analysisIndex = raw.indexOf(analysisHeading);
+                    const synthesisIndex = raw.indexOf(synthesisHeading);
+                    
+                    if (analysisIndex !== -1 && synthesisIndex !== -1) {
+                        analysisPart = raw.slice(analysisIndex, synthesisIndex).trim();
+                        synthesisPart = raw.slice(synthesisIndex).trim();
+                    }
+                    
+                    const chairmanAnalysis = document.getElementById('chairman-analysis');
+                    if (analysisPart && chairmanAnalysis) {
+                        chairmanAnalysis.innerHTML = marked.parse(analysisPart);
+                        chairmanAnalysis.style.display = 'block';
+                    } else if (chairmanAnalysis) {
+                        chairmanAnalysis.style.display = 'none';
+                        chairmanAnalysis.innerHTML = '';
+                    }
+                    
+                    chairmanContent.innerHTML = marked.parse(synthesisPart);
+                    document.getElementById('chairman-actions').style.display = 'flex';
+                } else {
+                    chairmanContent.innerHTML = '<p>Chairman could not form a conclusion</p>';
+                    const chairmanAnalysis = document.getElementById('chairman-analysis');
+                    if (chairmanAnalysis) {
+                        chairmanAnalysis.style.display = 'none';
+                        chairmanAnalysis.innerHTML = '';
+                    }
+                    document.getElementById('chairman-actions').style.display = 'none';
+                }
+                
+                // Сохраняем оригинальные тексты
+                window.originalResponses = data.individual_responses.map(r => r.response);
+                window.originalChairman = data.chairman_response;
+                window.currentCouncilData = {
+                    query: query,
+                    individual_responses: data.individual_responses,
+                    chairman_response: data.chairman_response,
+                    timestamp: new Date().toISOString()
+                };
+                
+                // Добавляем в историю диалога
+                conversationHistory.push({
+                    role: 'user',
+                    content: query
+                });
+                
+                if (data.chairman_response) {
+                    conversationHistory.push({
+                        role: 'assistant',
+                        content: data.chairman_response
+                    });
+                }
+                
+                // Обновляем контекст
+                updateConversationContext();
+                
+                document.getElementById('save-btn').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Query failed:', error);
+                responsesGrid.innerHTML = `
+                    <div class="response-card">
+                        <div class="response-content" style="color: #ef4444;">
+                            Error: ${error.message}
+                        </div>
+                    </div>
+                `;
+                chairmanContent.innerHTML = '';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Convene Council';
+            }
+            
+            // Скроллим к результатам
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        
+        function copyResponse(idx) {
+            navigator.clipboard.writeText(window.originalResponses[idx]);
+            const btn = document.querySelector(`.copy-btn-${idx}`);
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+            setTimeout(() => btn.innerHTML = originalHTML, 1000);
+        }
+        
+        function copyInputQuery() {
+            const queryInput = document.getElementById('query-input');
+            navigator.clipboard.writeText(queryInput.value);
+            const btn = document.getElementById('input-copy-btn');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+            btn.style.borderColor = 'var(--accent-green)';
+            btn.style.color = 'var(--accent-green)';
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.style.borderColor = '';
+                btn.style.color = '';
+            }, 1500);
+        }
+        
+        function copyChairman() {
+            navigator.clipboard.writeText(window.originalChairman);
+            const btn = document.getElementById('copy-chairman-btn');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+            setTimeout(() => btn.innerHTML = originalHTML, 1000);
+        }
+        
+        function likeResponse(idx) {
+            const btn = event.target;
+            btn.classList.toggle('active');
+            // Убираем дислайк если был
+            const card = btn.closest('.response-card');
+            card.querySelector('.dislike').classList.remove('active');
+        }
+        
+        function dislikeResponse(idx) {
+            const btn = event.target;
+            btn.classList.toggle('active');
+            // Убираем лайк если был
+            const card = btn.closest('.response-card');
+            card.querySelector('.like').classList.remove('active');
+        }
+        
+        function likeChairman() {
+            const btn = event.target;
+            btn.classList.toggle('active');
+            document.querySelector('#chairman-actions .dislike').classList.remove('active');
+        }
+        
+        function dislikeChairman() {
+            const btn = event.target;
+            btn.classList.toggle('active');
+            document.querySelector('#chairman-actions .like').classList.remove('active');
+        }
+    </script>
+</body>
+</html>
+
