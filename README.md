@@ -2,7 +2,7 @@
 
 A multi-model AI council that combines insights from multiple LLMs to provide comprehensive, well-reasoned answers. Inspired by [Andrej Karpathy's LLM Council](https://github.com/karpathy/llm-council).
 
-![LLM Council Screenshot](screenshot.png)
+
 
 ## How It Works
 
